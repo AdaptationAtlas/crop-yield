@@ -46,4 +46,14 @@ docs/
 po/*~
 
 # RStudio Connect folder
-rsconnect/
+rsconnect
+
+# R Environment Variables
+.Renviron/
+
+#macOSX files
+.DS_Store
+
+#ignore jupyter checkpoints
+.ipynb_checkpoints/
+R/.ipynb_checkpoints/
