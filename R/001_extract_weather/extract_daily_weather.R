@@ -20,7 +20,7 @@ tn_fut <- paste0(root, "/chirts_cmip6_africa/Tmin_")
 tx_fut <- paste0(root, "/chirts_cmip6_africa/Tmax_")
 
 #output directory
-out_dir <- paste0(root, "/atlas_yield")
+out_dir <- "~/work/atlas_yield" #paste0(root, "/atlas_yield")
 if (!file.exists(out_dir)) {dir.create(out_dir)}
 
 #weather station locations
@@ -150,8 +150,8 @@ extract_daily_data <- function(gcm, ssp, prd) {
 }
 
 #apply function for future data extract
-plan(multicore, workers = 10)
-1:nrow(stp[1:5,]) %>%
+plan(multicore, workers = 14)
+1:nrow(stp) %>%
   furrr::future_map(.f = function(i){extract_daily_data(gcm = paste0(stp$gcm[i]),
                                                         ssp = paste0(stp$ssp[i]),
                                                         prd = paste0(stp$prd[i]))
