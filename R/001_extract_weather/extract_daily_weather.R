@@ -20,7 +20,7 @@ tn_fut <- paste0(root, "/chirts_cmip6_africa/Tmin_")
 tx_fut <- paste0(root, "/chirts_cmip6_africa/Tmax_")
 
 #output directory
-out_dir <- "~/work/atlas_yield" #paste0(root, "/atlas_yield")
+out_dir <- "~/work/atlas_yield/daily_gcm_extract" #paste0(root, "/atlas_yield")
 if (!file.exists(out_dir)) {dir.create(out_dir)}
 
 #weather station locations
@@ -37,7 +37,9 @@ his_dates <- seq(from = as.Date(paste0(min(his_yrs),'-01-01')),
 
 #2. extract variables
 for (varname in c("pr", "tmax", "tmin", "srad")) {
-  if (!file.exists(paste0(out_dir, "/", varname, "_historical.csv"))) {
+  ofile <- paste0(out_dir, "/historical/", varname, "_historical.csv")
+  if (!file.exists(dirname(ofile))) {dir.create(dirname(ofile))}
+  if (!file.exists(ofile)) {
     data_all <- list()
     for (yr in his_yrs) {
       cat("...extracting variable=", varname, "/ year=", yr, "\n")
@@ -79,16 +81,16 @@ for (varname in c("pr", "tmax", "tmin", "srad")) {
       data_all[[which(his_yrs %in% yr)]] <- rs_tab
     }
     data_all <- do.call("rbind", data_all)
-    write.csv(data_all, paste0(out_dir, "/", varname, "_historical.csv"), row.names=FALSE)
+    write.csv(data_all, ofile, row.names=FALSE)
   }
 }
 
 
 #second, extract future scenario data
 #1. define period, ssp, and gcm
-gcms <- c('ACCESS-ESM1-5','EC-Earth3','INM-CM5-0','MPI-ESM1-2-HR') #,'MRI-ESM2-0')
+gcms <- c('ACCESS-ESM1-5','EC-Earth3','INM-CM5-0','MPI-ESM1-2-HR','MRI-ESM2-0')
 ssps <- c('ssp126','ssp245','ssp370','ssp585')
-prds <- c('2021_2040','2041_2060', '2061_2080', '2081_2100')
+prds <- c('2021_2040','2041_2060','2061_2080','2081_2100')
 stp <- base::expand.grid(gcms,ssps,prds) %>% base::as.data.frame()
 names(stp) <- c('gcm','ssp','prd'); rm(gcms, ssps, prds)
 stp <- stp %>%
@@ -107,7 +109,9 @@ extract_daily_data <- function(gcm, ssp, prd) {
   
   #2. extract variables
   for (varname in c("pr", "tmax", "tmin", "srad")) {
-    if (!file.exists(paste0(out_dir, "/", varname, "_", gcm, "_", ssp, "_", prd, ".csv"))) {
+    ofile <- paste0(out_dir, "/", gcm, "/", varname, "_", gcm, "_", ssp, "_", prd, ".csv")
+    if (!file.exists(dirname(ofile))) {dir.create(dirname(ofile))}
+    if (!file.exists(ofile)) {
       data_all <- list()
       for (yr in fut_yrs) {
         cat("...extracting for ssp=", ssp, "/ gcm=", gcm, "/ variable=", varname, "/ year=", yr, "\n")
@@ -144,7 +148,7 @@ extract_daily_data <- function(gcm, ssp, prd) {
         data_all[[which(fut_yrs %in% yr)]] <- rs_tab
       }
       data_all <- do.call("rbind", data_all)
-      write.csv(data_all, paste0(out_dir, "/", varname, "_", gcm, "_", ssp, "_", prd, ".csv"), row.names=FALSE)
+      write.csv(data_all, ofile, row.names=FALSE)
     }
   }
 }
